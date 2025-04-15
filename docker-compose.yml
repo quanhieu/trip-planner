@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  orchestrator:
+    build: .
+    command: python -m agents.orchestrator_agent
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - agent_network
+
+  search_agent:
+    build: .
+    command: python -m agents.search_agent
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - agent_network
+
+  entertainment_agent:
+    build: .
+    command: python -m agents.entertainment_agent
+    ports:
+      - "8002:8002"
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - agent_network
+
+  meal_agent:
+    build: .
+    command: python -m agents.meal_agent
+    ports:
+      - "8003:8003"
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - agent_network
+
+  stay_agent:
+    build: .
+    command: python -m agents.stay_agent
+    ports:
+      - "8004:8004"
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - agent_network
+
+  frontend:
+    build: .
+    command: streamlit run travel_ui.py
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - agent_network
+    depends_on:
+      - orchestrator
+      - search_agent
+      - entertainment_agent
+      - meal_agent
+      - stay_agent
+
+networks:
+  agent_network:
+    driver: bridge
