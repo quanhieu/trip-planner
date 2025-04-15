@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Any
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 from pathlib import Path
@@ -11,7 +11,13 @@ class Settings(BaseSettings):
     CLAUDE_API_KEY: str = ""
     # OLLAMA_API_URL: str = "http://localhost:11434"
     
+    # LLM Base URLs
+    OPENAI_BASE_URL: str = "https://api.openai.com/v1"
+    GEMINI_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta"
+    CLAUDE_BASE_URL: str = "https://api.anthropic.com/v1"
+    
     # Search API Keys
+    GOOGLE_API_KEY: str = ""
     GOOGLE_PLACES_API_KEY: str = ""
     TRIPADVISOR_API_KEY: str = ""
     BOOKING_API_KEY: str = ""
@@ -24,9 +30,37 @@ class Settings(BaseSettings):
     STAY_AGENT_URL: str = "http://localhost:8004"
     
     # Model Configurations
-    DEFAULT_MODEL: str = "gpt-4"
-    TEMPERATURE: float = 0.7
-    MAX_TOKENS: int = 2000
+    MODEL_CONFIGS: Dict[str, Dict[str, Any]] = {
+        "gpt-4o": {
+            "complexity": "HIGH",
+            "context_length": 8000,
+            "cost_per_token": 0.03,
+            "strengths": ["complex_reasoning", "creative_tasks", "detailed_planning"]
+        },
+        "gpt-4o-mini": {
+            "complexity": "MEDIUM",
+            "context_length": 4000,
+            "cost_per_token": 0.015,
+            "strengths": ["complex_reasoning", "basic_planning"]
+        },
+        "gemini-2.0-flash": {
+            "complexity": "MEDIUM",
+            "context_length": 4000,
+            "cost_per_token": 0.01,
+            "strengths": ["factual_queries", "basic_planning", "information_extraction"]
+        },
+        "claude-3.7-sonnet": {
+            "complexity": "HIGH",
+            "context_length": 6000,
+            "cost_per_token": 0.02,
+            "strengths": ["analysis", "structured_output", "travel_planning"]
+        }
+    }
+    
+    # Default Model Settings
+    DEFAULT_TEMPERATURE: float = 0.7
+    DEFAULT_MAX_TOKENS: int = 2000
+    DEFAULT_MODEL: str = "gpt-4o"  # Default model to use
     
     # Search Configurations
     SEARCH_CACHE_DURATION: int = 24  # hours
@@ -36,6 +70,33 @@ class Settings(BaseSettings):
     # Application Settings
     DEBUG: bool = False
     LOG_LEVEL: str = "INFO"
+    
+    # ADK Configuration
+    ADK_CONFIG: Dict[str, Any] = {
+        "DEFAULT_MODEL": "gpt-4o",  # Updated to match our default model
+        "TEMPERATURE": 0.7,
+        "MAX_TOKENS": 2000,
+        "USE_TOOLS": True
+    }
+    
+    # A2A Protocol Configuration
+    A2A_CONFIG: Dict[str, Any] = {
+        "MAX_RETRIES": 3,
+        "TIMEOUT": 60,
+        "CIRCUIT_BREAKER_THRESHOLD": 5
+    }
+    
+    # Agent-specific settings
+    AGENT_SETTINGS: Dict[str, Dict[str, Any]] = {
+        "search": {
+            "max_results": 10,
+            "search_providers": ["google"]
+        },
+        "entertainment": {
+            "max_suggestions": 5
+        }
+        # ... other agent settings
+    }
     
     class Config:
         env_file = ".env"

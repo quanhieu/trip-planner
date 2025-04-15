@@ -55,8 +55,8 @@ class SearchAgent(Agent):
             tools=[SearchTool(), google_search.GoogleSearchTool()]
         )
         self.model = settings.DEFAULT_MODEL
-        self.temperature = settings.TEMPERATURE
-        self.max_tokens = settings.MAX_TOKENS
+        self.temperature = settings.DEFAULT_TEMPERATURE
+        self.max_tokens = settings.DEFAULT_MAX_TOKENS
 
     async def process_query(self, query: str) -> Dict[str, Any]:
         """Process a search query using multiple tools and combine results."""

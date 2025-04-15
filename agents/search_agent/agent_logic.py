@@ -32,8 +32,8 @@ class SearchService:
             unique_results = []
             
             for result in all_results:
-                name = result["name"].lower()
-                if name not in seen_names:
+                name = result.get("name", "").lower()
+                if name and name not in seen_names:
                     seen_names.add(name)
                     unique_results.append(result)
             
@@ -63,8 +63,8 @@ class SearchService:
             unique_results = []
             
             for result in all_results:
-                name = result["name"].lower()
-                if name not in seen_names:
+                name = result.get("name", "").lower()
+                if name and name not in seen_names:
                     seen_names.add(name)
                     unique_results.append(result)
             
@@ -82,7 +82,7 @@ class SearchService:
                     query=f"hotels in {destination}",
                     type="lodging"
                 ),
-                self.booking_provider.search_hotels(destination)
+                self.booking_provider.search_hotels(location=destination)
             )
             
             # Combine and deduplicate results
@@ -91,8 +91,8 @@ class SearchService:
             unique_results = []
             
             for result in all_results:
-                name = result["name"].lower()
-                if name not in seen_names:
+                name = result.get("name", "").lower()
+                if name and name not in seen_names:
                     seen_names.add(name)
                     unique_results.append(result)
             
@@ -100,6 +100,15 @@ class SearchService:
         except Exception as e:
             logger.error(f"Error searching hotels: {str(e)}")
             return []
+
+    async def search_all(self, destination: str):
+        """Search for attractions, restaurants, and hotels in parallel."""
+        attractions, restaurants, hotels = await asyncio.gather(
+            self.search_attractions(destination),
+            self.search_restaurants(destination),
+            self.search_hotels(destination)
+        )
+        return attractions, restaurants, hotels
 
 # Initialize the search service
 search_service = SearchService()

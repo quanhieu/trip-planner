@@ -9,4 +9,8 @@ def create_app(agent):
         result = await agent.execute(payload)
         return result
 
+    @app.get("/.well-known/agent-card")
+    async def get_agent_card():
+        return agent.get_card()
+
     return app

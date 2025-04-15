@@ -96,7 +96,8 @@ Các biến môi trường quan trọng trong file `.env`:
 
 - **Cấu hình Model:**
 
-  - `DEFAULT_MODEL`: Model mặc định (vd: gpt-4)
+  <!-- - `DEFAULT_MODEL`: Model mặc định (vd: gpt-4) -->
+
   - `TEMPERATURE`: Độ sáng tạo của model (0-1)
   - `MAX_TOKENS`: Số token tối đa cho mỗi lần gọi
 

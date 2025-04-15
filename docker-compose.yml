@@ -12,6 +12,14 @@ services:
       - PYTHONPATH=/app
     networks:
       - agent_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
 
   search_agent:
     build: .
@@ -24,6 +32,14 @@ services:
       - PYTHONPATH=/app
     networks:
       - agent_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
 
   entertainment_agent:
     build: .
@@ -36,6 +52,14 @@ services:
       - PYTHONPATH=/app
     networks:
       - agent_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
 
   meal_agent:
     build: .
@@ -48,6 +72,14 @@ services:
       - PYTHONPATH=/app
     networks:
       - agent_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
 
   stay_agent:
     build: .
@@ -60,6 +92,14 @@ services:
       - PYTHONPATH=/app
     networks:
       - agent_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
 
   frontend:
     build: .
@@ -73,11 +113,24 @@ services:
     networks:
       - agent_network
     depends_on:
-      - orchestrator
-      - search_agent
-      - entertainment_agent
-      - meal_agent
-      - stay_agent
+      orchestrator:
+        condition: service_healthy
+      search_agent:
+        condition: service_healthy
+      entertainment_agent:
+        condition: service_healthy
+      meal_agent:
+        condition: service_healthy
+      stay_agent:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
 
 networks:
   agent_network:

@@ -26,7 +26,7 @@ class OpenAIClient(AIClient):
     def __init__(self):
         self.api_key = settings.OPENAI_API_KEY
         self.model = settings.DEFAULT_MODEL
-        self.base_url = "https://api.openai.com/v1"
+        self.base_url = settings.OPENAI_BASE_URL
         
     async def generate(self, prompt: str, **kwargs) -> Dict[str, Any]:
         """Generate a response using OpenAI's completion API."""
@@ -89,7 +89,7 @@ class GeminiClient(AIClient):
     
     def __init__(self):
         self.api_key = settings.GEMINI_API_KEY
-        self.base_url = "https://generativelanguage.googleapis.com/v1beta"
+        self.base_url = settings.GEMINI_BASE_URL
         
     async def generate(self, prompt: str, **kwargs) -> Dict[str, Any]:
         """Generate a response using Gemini API."""
@@ -156,7 +156,7 @@ class ClaudeClient(AIClient):
     
     def __init__(self):
         self.api_key = settings.CLAUDE_API_KEY
-        self.base_url = "https://api.anthropic.com/v1"
+        self.base_url = settings.CLAUDE_BASE_URL
         
     async def generate(self, prompt: str, **kwargs) -> Dict[str, Any]:
         """Generate a response using Claude API."""
