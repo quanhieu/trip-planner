@@ -3,16 +3,16 @@ import streamlit as st
 import requests
 import datetime
 
-st.title("Ứng dụng Lập Kế hoạch Chuyến đi")
+st.title("Trip Planner Application")
 
-# Form nhập liệu
+# Input form
 with st.form(key='trip_form'):
-    destination = st.text_input("Đi chơi đâu?", "Đà Nẵng")
-    start_date = st.date_input("Ngày đi", datetime.date.today())
-    end_date = st.date_input("Ngày về", datetime.date.today() + datetime.timedelta(days=3))
-    num_people = st.number_input("Tổng số người đi", min_value=1, value=2)
-    budget_per_person = st.number_input("Chi phí trên mỗi người (VND)", min_value=100000, value=500000, step=100000)
-    submit_button = st.form_submit_button(label='Lập kế hoạch')
+    destination = st.text_input("Where would you like to go?", "Da Nang")
+    start_date = st.date_input("Departure date", datetime.date.today())
+    end_date = st.date_input("Return date", datetime.date.today() + datetime.timedelta(days=3))
+    num_people = st.number_input("Number of people", min_value=1, value=2)
+    budget_per_person = st.number_input("Budget per person (VND)", min_value=100000, value=500000, step=100000)
+    submit_button = st.form_submit_button(label='Plan Trip')
 
 if submit_button:
     payload = {
@@ -22,15 +22,15 @@ if submit_button:
         "num_people": num_people,
         "budget_per_person": budget_per_person
     }
-    st.info("Đang xây dựng kế hoạch, vui lòng chờ...")
+    st.info("Creating your travel plan, please wait...")
     try:
-        # Gọi Orchestrator Agent (port 8000)
+        # Call Orchestrator Agent (port 8000)
         response = requests.post("http://localhost:8000/run", json=payload, timeout=60)
         response.raise_for_status()
         result = response.json()
-        st.success("Kế hoạch của bạn đã sẵn sàng!")
+        st.success("Your travel plan is ready!")
         
-        st.subheader("Lịch trình:")
+        st.subheader("Itinerary:")
         itinerary = result.get("itinerary", [])
         if itinerary:
             for day in itinerary:
@@ -38,23 +38,23 @@ if submit_button:
                 for activity in day.get("activities", []):
                     st.write(f"- *{activity.get('time', '')}*: {activity.get('activity', '')}")
         else:
-            st.write("Không có lịch trình chi tiết.")
+            st.write("No detailed itinerary available.")
         
-        st.subheader("Kế hoạch Ẩm thực:")
+        st.subheader("Meal Plan:")
         meals = result.get("meals", [])
         if meals:
             for meal in meals:
-                st.write(f"**Day {meal.get('day', '')}:** Trưa - {meal.get('lunch', '')} | Tối - {meal.get('dinner', '')}")
+                st.write(f"**Day {meal.get('day', '')}:** Lunch - {meal.get('lunch', '')} | Dinner - {meal.get('dinner', '')}")
         else:
-            st.write("Không có kế hoạch ẩm thực chi tiết.")
+            st.write("No detailed meal plan available.")
         
-        st.subheader("Đề xuất Chỗ ở:")
+        st.subheader("Accommodation Suggestions:")
         stays = result.get("stays", {})
         if stays:
-            st.write(f"- **Tên**: {stays.get('name', '')}")
-            st.write(f"- **Giá/đêm**: {stays.get('price_per_night', '')} VND")
-            st.write(f"- **Ghi chú**: {stays.get('note', '')}")
+            st.write(f"- **Name**: {stays.get('name', '')}")
+            st.write(f"- **Price/night**: {stays.get('price_per_night', '')} VND")
+            st.write(f"- **Notes**: {stays.get('note', '')}")
         else:
-            st.write("Không có đề xuất chỗ ở.")
+            st.write("No accommodation suggestions available.")
     except Exception as e:
-        st.error(f"Có lỗi xảy ra: {str(e)}")
+        st.error(f"An error occurred: {str(e)}")
