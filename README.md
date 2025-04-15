@@ -1,120 +1,120 @@
-# Ứng dụng Lập kế hoạch Chuyến đi
+# Trip Planner Application
 
-## Giới thiệu
+## Introduction
 
-Ứng dụng này sử dụng kiến trúc đa tác nhân (multi-agent) với ADK và giao thức A2A. Các agent (được viết bằng FastAPI) giao tiếp với nhau để xây dựng một kế hoạch chuyến đi gồm 1 agent điều phối, 1 agent search internet, 1 agent lên lịch trình tham quan, 1 agent lên kế hoạch ẩm thực và 1 agent đề xuất chỗ ở. Giao diện người dùng được xây dựng bằng Streamlit. Dùng các model openAI 4o mini, gemini, grok, claude 3.7.
+This application uses a multi-agent architecture with ADK and A2A protocol. The agents (built with FastAPI) communicate with each other to create a trip plan consisting of 1 orchestrator agent, 1 internet search agent, 1 entertainment itinerary agent, 1 meal planning agent, and 1 accommodation suggestion agent. The user interface is built with Streamlit. It uses models such as OpenAI 4o mini, Gemini, Grok, and Claude 3.7.
 
-## Cấu trúc dự án
+## Project Structure
 
-- **agents/**: Chứa các agent riêng biệt:
-  - `orchestrator_agent/`: Agent điều phối tổng hợp kết quả từ các agent con.
-  - `search_agent/`: Agent tìm kiếm thông tin thực tế (điểm tham quan, nhà hàng, khách sạn).
-  - `entertainment_agent/`: Agent lập lịch trình vui chơi.
-  - `meal_agent/`: Agent lập kế hoạch ẩm thực.
-  - `stay_agent/`: Agent gợi ý chỗ ở.
-- **common/**: Mã dùng chung cho giao tiếp A2A và cấu hình.
-  - `a2a_server.py`: Server FastAPI cơ bản cho các agent.
-  - `a2a_client.py`: Client để giao tiếp giữa các agent.
-  - `config.py`: Quản lý cấu hình và biến môi trường.
-- **travel_ui.py**: Giao diện frontend (Streamlit).
-- **requirements.txt**: Danh sách các thư viện phụ thuộc.
-- **.env.template**: Mẫu file cấu hình môi trường.
-- **README.md**: Hướng dẫn chạy ứng dụng.
+- **agents/**: Contains individual agents:
+  - `orchestrator_agent/`: Orchestrator agent that aggregates results from child agents.
+  - `search_agent/`: Agent for searching factual information (attractions, restaurants, hotels).
+  - `entertainment_agent/`: Agent for planning entertainment itineraries.
+  - `meal_agent/`: Agent for meal planning.
+  - `stay_agent/`: Agent for accommodation suggestions.
+- **common/**: Shared code for A2A communication and configuration.
+  - `a2a_server.py`: Basic FastAPI server for agents.
+  - `a2a_client.py`: Client for communication between agents.
+  - `config.py`: Configuration and environment variable management.
+- **travel_ui.py**: Frontend interface (Streamlit).
+- **requirements.txt**: List of dependencies.
+- **.env.template**: Environment configuration template.
+- **README.md**: Application instructions.
 
-## Hướng dẫn cài đặt và chạy
+## Installation and Execution Guide
 
-1. **Tạo môi trường ảo và cài đặt thư viện:**
+1. **Create a virtual environment and install libraries:**
 
    ```bash
    python -m venv .venv
-   source .venv/bin/activate   # Trên Linux/Mac (Windows: .venv\Scripts\activate)
+   source .venv/bin/activate   # On Linux/Mac (Windows: .venv\Scripts\activate)
    pip install -r requirements.txt
    ```
 
-2. **Thiết lập môi trường:**
+2. **Set up the environment:**
 
    ```bash
-   # Sao chép file môi trường mẫu
+   # Copy the environment template file
    cp .env.template .env
 
-   # Chỉnh sửa file .env với các thông tin cần thiết:
-   # - Thêm API keys cho các dịch vụ (OpenAI, Gemini, Claude)
-   # - Điều chỉnh URL các agent nếu cần
-   # - Cấu hình các thông số model và ứng dụng
+   # Edit the .env file with necessary information:
+   # - Add API keys for services (OpenAI, Gemini, Claude)
+   # - Adjust agent URLs if needed
+   # - Configure model and application parameters
    ```
 
-3. **Chạy các agent (mỗi agent mở 1 terminal riêng):**
+3. **Run the agents (each agent in a separate terminal):**
 
    ```bash
-   # Chạy Search Agent (port 8001)
+   # Run Search Agent (port 8001)
    python -m agents.search_agent
 
-   # Chạy Entertainment Agent (port 8002)
+   # Run Entertainment Agent (port 8002)
    python -m agents.entertainment_agent
 
-   # Chạy Meal Agent (port 8003)
+   # Run Meal Agent (port 8003)
    python -m agents.meal_agent
 
-   # Chạy Stay Agent (port 8004)
+   # Run Stay Agent (port 8004)
    python -m agents.stay_agent
 
-   # Chạy Orchestrator Agent (port 8000)
+   # Run Orchestrator Agent (port 8000)
    python -m agents.orchestrator_agent
    ```
 
-4. **Chạy giao diện người dùng (Streamlit):**
+4. **Run the user interface (Streamlit):**
 
    ```bash
    streamlit run travel_ui.py
    ```
 
-   Mở trình duyệt và truy cập vào địa chỉ hiển thị (thường là http://localhost:8501).
+   Open your browser and access the displayed address (usually http://localhost:8501).
 
-5. **Sử dụng ứng dụng:**
-   - Nhập các thông tin chuyến đi: điểm đến, ngày đi/về, số người và chi phí trên mỗi người.
-   - Nhấn "Lập kế hoạch" để hệ thống gọi Orchestrator, từ đó gọi lần lượt các agent con.
-   - Kết quả (lịch trình, kế hoạch ẩm thực, gợi ý chỗ ở) sẽ được hiển thị trên giao diện Streamlit.
+5. **Using the application:**
+   - Enter trip information: destination, travel dates, number of people, and budget per person.
+   - Click "Plan Trip" to call the Orchestrator, which then calls the child agents sequentially.
+   - Results (itinerary, meal plan, accommodation suggestions) will be displayed on the Streamlit interface.
 
-## Biến môi trường
+## Environment Variables
 
-Các biến môi trường quan trọng trong file `.env`:
+Important environment variables in the `.env` file:
 
 - **API Keys:**
 
-  - `OPENAI_API_KEY`: API key cho OpenAI
-  - `GEMINI_API_KEY`: API key cho Google Gemini
-  - `CLAUDE_API_KEY`: API key cho Anthropic Claude
-  <!-- - `OLLAMA_API_URL`: URL cho Ollama API (mặc định: http://localhost:11434) -->
+  - `OPENAI_API_KEY`: API key for OpenAI
+  - `GEMINI_API_KEY`: API key for Google Gemini
+  - `CLAUDE_API_KEY`: API key for Anthropic Claude
+  <!-- - `OLLAMA_API_URL`: URL for Ollama API (default: http://localhost:11434) -->
 
-- **URL Các Agent:**
+- **Agent URLs:**
 
-  - `ORCHESTRATOR_URL`: URL của agent điều phối
-  - `SEARCH_AGENT_URL`: URL của agent tìm kiếm
-  - `ENTERTAINMENT_AGENT_URL`: URL của agent lên lịch trình
-  - `MEAL_AGENT_URL`: URL của agent kế hoạch ẩm thực
-  - `STAY_AGENT_URL`: URL của agent gợi ý chỗ ở
+  - `ORCHESTRATOR_URL`: URL of the orchestrator agent
+  - `SEARCH_AGENT_URL`: URL of the search agent
+  - `ENTERTAINMENT_AGENT_URL`: URL of the entertainment itinerary agent
+  - `MEAL_AGENT_URL`: URL of the meal planning agent
+  - `STAY_AGENT_URL`: URL of the accommodation suggestion agent
 
-- **Cấu hình Model:**
+- **Model Configuration:**
 
-  <!-- - `DEFAULT_MODEL`: Model mặc định (vd: gpt-4) -->
+  <!-- - `DEFAULT_MODEL`: Default model (e.g., gpt-4) -->
 
-  - `TEMPERATURE`: Độ sáng tạo của model (0-1)
-  - `MAX_TOKENS`: Số token tối đa cho mỗi lần gọi
+  - `TEMPERATURE`: Model creativity level (0-1)
+  - `MAX_TOKENS`: Maximum tokens for each call
 
-- **Cài đặt ứng dụng:**
-  - `DEBUG`: Chế độ debug (true/false)
-  - `LOG_LEVEL`: Mức độ log (DEBUG/INFO/WARNING/ERROR)
+- **Application Settings:**
+  - `DEBUG`: Debug mode (true/false)
+  - `LOG_LEVEL`: Logging level (DEBUG/INFO/WARNING/ERROR)
 
-## Lưu ý
+## Notes
 
-- Đảm bảo đã cấu hình đúng các API key trong file `.env` trước khi chạy ứng dụng.
-- Kiểm tra các port mặc định (8000-8004) không bị chiếm dụng.
-- Trong môi trường production, nên thay đổi các URL agent thành địa chỉ thực tế của server.
-- Đảm bảo bảo mật file `.env` và không commit nó lên git.
+- Ensure you've correctly configured the API keys in the `.env` file before running the application.
+- Check that the default ports (8000-8004) are not already in use.
+- In a production environment, you should change the agent URLs to the actual server addresses.
+- Make sure to secure the `.env` file and not commit it to git.
 
-## Kết luận
+## Conclusion
 
-Mã nguồn trên cung cấp một ví dụ đầy đủ về cách xây dựng ứng dụng lập kế hoạch chuyến đi đa tác nhân sử dụng ADK, A2A, FastAPI và Streamlit. Bạn có thể mở rộng và tích hợp thêm chức năng (ví dụ gọi API tìm kiếm thực, kết nối với các model AI thật) theo nhu cầu thực tế. Nếu có bất kỳ câu hỏi hay cần hỗ trợ thêm, hãy cho tôi biết!
+The code above provides a complete example of how to build a multi-agent trip planning application using ADK, A2A, FastAPI, and Streamlit. You can extend and integrate additional functionality (e.g., real search API calls, connection to actual AI models) according to your specific needs. If you have any questions or need further assistance, please let me know!
 
 ---
 
@@ -122,32 +122,32 @@ Mã nguồn trên cung cấp một ví dụ đầy đủ về cách xây dựng 
 trip_planner/
 ├── agents/
 │   ├── orchestrator_agent/
-│   │   ├── __main__.py          # Khởi chạy FastAPI cho orchestrator (port 8000)
-│   │   ├── task_manager.py      # Logic gọi các agent con và tổng hợp kết quả
-│   │   └── agent.json           # Metadata của orchestrator agent
+│   │   ├── __main__.py          # Launch FastAPI for orchestrator (port 8000)
+│   │   ├── task_manager.py      # Logic for calling child agents and aggregating results
+│   │   └── agent.json           # Metadata for orchestrator agent
 │   ├── search_agent/
-│   │   ├── __main__.py          # Khởi chạy FastAPI cho search agent (port 8001)
-│   │   ├── agent_logic.py       # Hàm logic thực hiện “tìm kiếm trên web”
-│   │   └── agent.json           # Metadata của search agent
+│   │   ├── __main__.py          # Launch FastAPI for search agent (port 8001)
+│   │   ├── agent_logic.py       # Logic for performing "web search"
+│   │   └── agent.json           # Metadata for search agent
 │   ├── entertainment_agent/
-│   │   ├── __main__.py          # Khởi chạy FastAPI cho entertainment agent (port 8002)
-│   │   ├── agent.py             # Logic lập lịch trình vui chơi
-│   │   └── agent.json           # Metadata của entertainment agent
+│   │   ├── __main__.py          # Launch FastAPI for entertainment agent (port 8002)
+│   │   ├── agent.py             # Logic for entertainment itinerary planning
+│   │   └── agent.json           # Metadata for entertainment agent
 │   ├── meal_agent/
-│   │   ├── __main__.py          # Khởi chạy FastAPI cho meal agent (port 8003)
-│   │   ├── agent.py             # Logic lập kế hoạch ẩm thực
-│   │   └── agent.json           # Metadata của meal agent
+│   │   ├── __main__.py          # Launch FastAPI for meal agent (port 8003)
+│   │   ├── agent.py             # Logic for meal planning
+│   │   └── agent.json           # Metadata for meal agent
 │   └── stay_agent/
-│       ├── __main__.py          # Khởi chạy FastAPI cho stay agent (port 8004)
-│       ├── agent.py             # Logic gợi ý chỗ ở phù hợp
-│       └── agent.json           # Metadata của stay agent
+│       ├── __main__.py          # Launch FastAPI for stay agent (port 8004)
+│       ├── agent.py             # Logic for suggesting suitable accommodations
+│       └── agent.json           # Metadata for stay agent
 ├── common/
-│   ├── a2a_server.py            # Tạo FastAPI app với endpoint /run cho mỗi agent
-│   └── a2a_client.py            # Hàm tiện ích gọi API của các agent khác (A2A client)
-├── travel_ui.py                 # Giao diện Streamlit (frontend)
-├── requirements.txt             # Danh sách các thư viện cần cài đặt
-├── Dockerfile                   # Dockerfile dùng cho toàn bộ dự án
-├── docker-compose.yml           # Định nghĩa các service dùng Docker Compose
-└── README.md                    # Hướng dẫn triển khai
+│   ├── a2a_server.py            # Create FastAPI app with /run endpoint for each agent
+│   └── a2a_client.py            # Utility functions for calling APIs of other agents (A2A client)
+├── travel_ui.py                 # Streamlit interface (frontend)
+├── requirements.txt             # List of libraries to install
+├── Dockerfile                   # Dockerfile for the entire project
+├── docker-compose.yml           # Defines services using Docker Compose
+└── README.md                    # Deployment instructions
 
 ``` -->
